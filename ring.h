@@ -1,6 +1,7 @@
 // ring.h
-// IJC-DU2 2015-04-10
+// IJC-DU2
 // Author: Miroslav Karásek, FIT
+// Date: 2015-04-10
 
 #ifndef RING_H
 #define RING_H

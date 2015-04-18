@@ -1,6 +1,7 @@
 // tail.c
-// IJC-DU2 2015-04-10 
+// IJC-DU2
 // Author: Miroslav Karásek, FIT
+// Date: 2015-04-10
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +18,7 @@ typedef struct {
     char *filename;
 } args_t;
 
-bool get_args(args_t* args, int argc, char **argv)
+bool get_args(args_t *args, int argc, char **argv)
 {
     char *number_argument = NULL;
     
