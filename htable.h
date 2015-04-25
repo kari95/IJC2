@@ -21,6 +21,8 @@ typedef struct
 	struct htab_listitem *data[];
 } htab_t;
 
+unsigned int hash_function(const char *str, unsigned htab_size);
+
 htab_t *htab_init(unsigned size);
 
 struct htab_listitem *htab_lookup(htab_t *table, const char *key);

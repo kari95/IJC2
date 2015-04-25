@@ -1,48 +1,81 @@
 # Makefile
 # IJC-DU2 
 # Author: Miroslav Karásek, FIT
-# Date: 2015-04-10
+# Date: 2015-04-25
 
 
 # Compiler options
 CC=gcc
-CFLAGS=-O2 -std=c99 -pedantic -Wall -Wextra -g 
-LFLAGS=-lm
-CPP=g++
-CPPFLAGS=-O2 -std=c++11 -pedantic -Wall -Wextra -g 
-LPPFLAGS=-lm -L "C:\Program Files (x86)\GCC\lib"
+CFLAGS=-O2 -std=c99 -pedantic -Wall -Wextra -g -fPIC
+CXX=g++
+CXXFLAGS=-O2 -std=c++11 -pedantic -Wall -Wextra -g -fPIC
 
-all: tail.exe tail2.exe wordcount.exe wordcount2.exe
+###########################################################
+
+all: tail tail2 wordcount wordcount-dynamic
+
+###########################################################
 
 tail.o: tail.c ring.h
-	$(CC) $(CFLAGS) -c tail.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 tail2.o: tail2.cc
-	$(CPP) $(CPPFLAGS) -c tail2.cc
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 ring.o: ring.c ring.h
-	$(CC) $(CFLAGS) -c ring.c
-
-htable.o: htable.c htable.h
-	$(CC) $(CFLAGS) -c htable.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 wordcount.o: wordcount.c htable.h io.h
-	$(CC) $(CFLAGS) -c wordcount.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 wordcount2.o: wordcount.cc
-	$(CPP) $(CPPFLAGS) -c wordcount.cc -o wordcount2.o
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 io.o: io.c io.h
-	$(CC) $(CFLAGS) -c io.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+htable_hash_function.o: htable_hash_function.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+htable_htab_lookup.o: htable_htab_lookup.c htable.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+htable_htab_init.o: htable_htab_init.c htable.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+htable_htab_foreach.o: htable_htab_foreach.c htable.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+htable_htab_remove.o: htable_htab_remove.c htable.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+htable_htab_clear.o: htable_htab_clear.c htable.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+htable_htab_free.o: htable_htab_free.c htable.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+htable_htab_statistics.o: htable_htab_statistics.c htable.h
+	$(CC) $(CFLAGS) -c $< -o $@
 	
-wordcount.exe: wordcount.o htable.o io.o
-	$(CC) $(CFLAGS) wordcount.o htable.o io.o -o wordcount.exe $(LFLAGS)
+###########################################################
+
+libhtable.a: htable_hash_function.o htable_htab_lookup.o htable_htab_init.o htable_htab_foreach.o htable_htab_remove.o htable_htab_clear.o htable_htab_free.o htable_htab_statistics.o
+	ar crs $@ $?
+
+libhtable.so: htable_hash_function.o htable_htab_lookup.o htable_htab_init.o htable_htab_foreach.o htable_htab_remove.o htable_htab_clear.o htable_htab_free.o htable_htab_statistics.o
+	$(CC) $(CFLAGS) -shared  $? -o $@
+
+###########################################################
+
+wordcount: wordcount.o io.o libhtable.a
+	$(CC) $(CFLAGS) wordcount.o io.o -o $@ -static -L. -lhtable
+
+wordcount-dynamic: wordcount.o io.o libhtable.so
+	$(CC) $(CFLAGS) wordcount.o io.o -o $@ -L. -lhtable
 	
-wordcount2.exe: wordcount2.o
-	$(CPP) $(CPPFLAGS) wordcount2.o -o wordcount2.exe $(LPPFLAGS)
+tail: tail.o ring.o
+	$(CC) $(CFLAGS) $? -o $@
 	
-tail.exe: tail.o ring.o
-	$(CC) $(CFLAGS) tail.o ring.o -o tail.exe $(LFLAGS)
-	
-tail2.exe: tail2.o
-	$(CPP) $(CPPFLAGS) tail2.o -o tail2.exe $(LPPFLAGS)
+tail2: tail2.o
+	$(CXX) $(CXXFLAGS) $? -o $@
