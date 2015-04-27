@@ -8,7 +8,10 @@
 #include "io.h"
 
 #define MAX_WORD_LENGTH 127
-#define HASH_TABLE_SIZE 100
+#define HASH_TABLE_SIZE 1000
+// zvolil jsem 1000 prvků, protože při 100 byl výpočet slov z celé knihy relativně pomalý a průměrná dékla seznamu se pohybovala okolo 100
+// při 1000 prvcích je průměrná délka as 10 a výpočet výrazně rychlejší
+// při použití 10 000 prvků již výpočet příliš nezrychlil a některé položky zůstaly prázdné
 
 void print_item(const char *key, int value)
 {
