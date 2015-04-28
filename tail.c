@@ -189,6 +189,7 @@ int main (int argc, char **argv)
         while ((line = ring_read_buffer(ring)) != NULL)
             printf("%s", line);
     }
+    ring_free(ring);
     fclose(file);
     if (all_in_limit)
         return 0;
